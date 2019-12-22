@@ -1,7 +1,8 @@
 package com.lcw;
 
 import org.junit.jupiter.api.Test;
-
+import static java.time.Duration.ofMinutes;
+import static java.time.Duration.ofMillis;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AssertionsDemo {
@@ -42,6 +43,45 @@ class AssertionsDemo {
     }
     @Test
     void exceptionTesting() {
+        Exception exception = assertThrows(ArithmeticException.class, () -> calculator.divide(1, 0));
+        assertEquals(" / by zero", exception.getMessage());
+    }
 
+    @Test
+    void timeoutNotExceeded() {
+        // The following assertion succeeds
+        assertTimeout(ofMinutes(2), () -> {
+
+        });
+    }
+
+    @Test
+    void timeoutNotExceededWithResult() {
+        // The following assertion succeeds , and returns the supplied object.
+        String actualResult = assertTimeout(ofMinutes(2), () -> {
+            return "a result";
+        });
+        assertEquals("a result", actualResult);
+    }
+
+    @Test
+    void timeoutNotExceededWithMethod() {
+        // The following assertions invokes a method reference and returns an object.
+        String actualGreeting = assertTimeout(ofMinutes(2), AssertionsDemo::greeting);
+        assertEquals("Hello, World!", actualGreeting);
+    }
+
+    @Test
+    void timeoutExceeded() {
+        // The following assertion fails with an error message similar to:
+        // execution exceeded timeout of 10ms by 91ms
+        assertTimeout(ofMillis(10), () -> {
+            // Simulate task that takes more than 10 ms.
+            Thread.sleep(100);
+        });
+    }
+
+    private static String greeting() {
+        return "Hello, World!";
     }
 }
